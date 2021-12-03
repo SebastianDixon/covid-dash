@@ -1,18 +1,16 @@
-file_path = "C:/Users/marke/Desktop/ECM1400/nation_2021-10-28.csv"
-
 import csv
 import json
 from uk_covid19 import Cov19API
 import sched, time
+import os
 
-LOCATION = 'Exeter'
-LOCATION_TYPE = 'ltla'
+"""csv_path = os.environ['CSV_PATH']
 
 
-def parse_csv_data(csv_filename):
+def parse_csv_data(csv_path):
     file = []
 
-    with open(csv_filename, newline='') as csvfile:
+    with open(csv_path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             file.append(row)
@@ -45,9 +43,10 @@ def process_covid_csv_data(covid_csv_data):
 
     output = [hospital_cases, cases, cumulative_cases]
     return output
+"""
 
 
-def covid_API_request(location=LOCATION, location_type=LOCATION_TYPE):
+def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ['LOCATION_TYPE']):
     location_filter = [f'areaType={location_type}', f'areaName={location}']
 
     cases_and_deaths = {
@@ -66,7 +65,8 @@ def covid_API_request(location=LOCATION, location_type=LOCATION_TYPE):
 
 def process_covid_data():
     local_data = covid_API_request()
-    national_data = covid_API_request(location='England', location_type='nation')
+    national_data = covid_API_request(location=os.environ['LOCATION'],
+                                      location_type=os.environ['LOCATION_TYPE'])
 
     count = 1
     local_cases = 0
