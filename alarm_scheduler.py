@@ -18,7 +18,7 @@ def get_alarms():
     return __alarm_info.values()
 
 
-def schedule_alarm(title, at_time, should_include_news=False):
+def schedule_alarm(title, at_time):
     time_delay = at_time - datetime.now()
 
     if time_delay.total_seconds() < 0:
@@ -26,9 +26,7 @@ def schedule_alarm(title, at_time, should_include_news=False):
 
     new_alarm = __alarm(
         title=title,
-        scheduled_time=at_time,
-        include_news=should_include_news,
-    )
+        scheduled_time=at_time)
     __alarm_info[title] = new_alarm
     __schedules[title] = __scheduler.enterabs(
         at_time.timestamp(), 1, lambda: __trigger_alarm(new_alarm)
@@ -67,17 +65,14 @@ def __run_schedules():
 
 def __alarm(
         title: str,
-        scheduled_time: datetime,
-        include_news: bool = False,):
+        scheduled_time: datetime):
 
     return {
         "title": title,
         "scheduled_time": scheduled_time,
         "content": Markup(
-            f"""Scheduled at: <strong>{scheduled_time}</strong> <br>
-            News briefing: <strong>{'enabled' if include_news else 'disabled'}</strong> <br>"""
-        ),
-        "include_news": include_news}
+            f"""Scheduled at: <strong>{scheduled_time}</strong> <br>"""
+        )}
 
 
 # start a scheduler polling thread
