@@ -13,10 +13,9 @@ def load_envs():
         for key, val in configs.items():
             os.environ[key.upper()] = val
 
-    print(os.environ)
-
 
 load_envs()
+
 import website
 
 website.app.run()

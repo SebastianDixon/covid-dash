@@ -5,12 +5,11 @@ from flask import render_template
 from typing import Dict, Any
 import os
 import covid_news_handler, covid_data_handler
-
+from alarm_scheduler import cancel_alarm, schedule_alarm, get_alarms
+import datetime
 from flask import Flask
-import json
 
 app = Flask(__name__)
-
 
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M"
@@ -20,9 +19,9 @@ update_dict = []
 
 s = sched.scheduler(time.time, time.sleep)
 
-__notifications = {}
+notifications = {}
 
-__removed_notifications = set()
+removed_notifications = set()
 
 
 def add_news_article():
@@ -65,11 +64,11 @@ def create_notification(title: str, content: str) -> Dict[str, Any]:
 
 
 def remove_notification(title: str = ""):
-    for notification_id, notification in __notifications.items():
+    for notification_id, notification in notifications.items():
         # find the notification dict with matching title
         if notification["title"] == title:
-            __notifications.pop(notification_id)
-            __removed_notifications.add(notification_id)
+            notifications.pop(notification_id)
+            removed_notifications.add(notification_id)
             break
 
 
@@ -79,46 +78,39 @@ def get_notifications(refresh=True):
 
         for news_headline in news_headlines:
             news_title = news_headline["title"]
-            news_description = news_headline["description"]
+            news_description = news_headline["content"]
             news_id = covid_news_handler.calculate_news_id()
 
             if (
                 not news_id
-                or news_id in __notifications
-                or news_id in __removed_notifications
+                or news_id in notifications
+                or news_id in removed_notifications
             ):
                 continue
 
-            __notifications[news_id] = create_notification(title=news_title, content=news_description)
-    return __notifications.values()
+            notifications[news_id] = {"title": news_title, "content": news_description}
+    return notifications.values()
 
 
 @app.route("/")
 @app.route('/index')
 def render():
-
     # the title of the alarm to be removed
     deleted_alarm_title = request.args.get("alarm_item", default="")
     # the title of the notification to be removed
     notification_title = request.args.get("notif", default="")
+
     # the time when an alarm will be scheduled
     new_alarm_time = request.args.get("alarm", default="")
     # the title of the alarm
     new_alarm_title = request.args.get("two", default="")
     # whether to include news briefing when the alarm fires
     include_news = request.args.get("news", default="")
-    # whether to include weather briefing when the alarm fires
-    include_weather = request.args.get("weather", default="")
 
-    """
-        if notification_title:
-        # the notif param is passed
-        # delete the given notification
+    if notification_title:
         remove_notification(notification_title)
         notifications = get_notifications(refresh=False)
     else:
-        # refresh the list of notifications when the alarm title is not present
-        # because we dont want to fetch news when the user is trying to remove alarms
         notifications = get_notifications(refresh=not deleted_alarm_title)
 
     if deleted_alarm_title:
@@ -134,7 +126,6 @@ def render():
             title=new_alarm_title,
             at_time=datetime.datetime.strptime(new_alarm_time, DATE_FORMAT)
         )
-    """
 
     news = add_news_article()
     data = covid_data_handler.process_covid_data()
@@ -143,25 +134,12 @@ def render():
     total_death = data[2]
     h_cases = data[3]
 
-    n_location = os.environ['NATION']
-    loc = os.environ['LOCATION']
-
-    s.run(blocking=False)
-    text_field = request.args.get('two')
-
-    news_check = request.args.get('news')
-
-    if text_field:
-        schedule_add_update(text_field)
-        if news_check:
-            schedule_add_news()
-
-    return render_template('index.html',
+    return render_template(os.environ['TEMPLATES_PATH'],
                            title='COVID DATA',
                            news_articles=news,
                            updates=update_dict,
-                           nation_location=n_location,
-                           location=loc,
+                           nation_location=os.environ['NATION'],
+                           location=os.environ['LOCATION'],
                            local_7day_infections=local_rate,
                            national_7day_infections=nation_rate,
                            hospital_cases=h_cases,
