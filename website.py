@@ -49,10 +49,9 @@ def get_notifications(refresh=True):
 @app.route('/index')
 def render():
     # the title of the alarm to be removed
-    deleted_alarm_title = request.args.get("alarm_item", default="")
+    deleted_alarm_title = request.args.get("update_item", default="")
     # the title of the notification to be removed
     notification_title = request.args.get("notif", default="")
-
     # the time when an alarm will be scheduled
     new_alarm_time = request.args.get("update", default="")
     # the title of the alarm
@@ -65,8 +64,6 @@ def render():
         notifications = get_notifications(refresh=not deleted_alarm_title)
 
     if deleted_alarm_title:
-        # the alarm_item param is passed
-        # delete the given alarm
         cancel_alarm(deleted_alarm_title)
 
     alarms = get_alarms()
