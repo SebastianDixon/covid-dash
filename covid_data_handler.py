@@ -4,7 +4,7 @@ from uk_covid19 import Cov19API
 import sched, time
 import os
 
-"""csv_path = os.environ['CSV_PATH']
+csv_path = os.environ['CSV_PATH']
 
 
 def parse_csv_data(csv_path):
@@ -43,7 +43,7 @@ def process_covid_csv_data(covid_csv_data):
 
     output = [hospital_cases, cases, cumulative_cases]
     return output
-"""
+
 
 
 def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ['LOCATION_TYPE']):
@@ -65,8 +65,8 @@ def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ[
 
 def process_covid_data():
     local_data = covid_API_request()
-    national_data = covid_API_request(location=os.environ['LOCATION'],
-                                      location_type=os.environ['LOCATION_TYPE'])
+    national_data = covid_API_request(location=os.environ['NATION'],
+                                      location_type=os.environ['NATION_TYPE'])
 
     count = 1
     local_cases = 0
@@ -94,3 +94,5 @@ def schedule_covid_updates(update_interval, update_name):
     s = sched.scheduler(time.time, time.sleep)
     s.enter(update_interval, 1, process_covid_data())
     s.run()
+
+

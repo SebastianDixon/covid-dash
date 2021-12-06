@@ -1,22 +1,19 @@
 import json
 import os
-from flask import Flask
 
 
 CONFIG_PATH = "config.json"
 
 
-def load_envs():
+def load_env():
     with open(CONFIG_PATH, "r") as config_file:
         configs = json.load(config_file)
 
         for key, val in configs.items():
             os.environ[key.upper()] = val
 
-    print(os.environ)
 
+load_env()
 
-load_envs()
 import website
-
 website.app.run()
