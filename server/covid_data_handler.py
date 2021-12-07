@@ -7,7 +7,7 @@ import logging
 This module handles calling covid data for the front end
 """
 
-#csv_path = os.environ['CSV_PATH']
+csv_path = os.environ['CSV_PATH']
 
 cases_and_deaths = {
     "areaCode": "areaCode",

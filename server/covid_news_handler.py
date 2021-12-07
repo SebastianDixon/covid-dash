@@ -7,7 +7,7 @@ This module handles calling news articles for the front end
 """
 
 
-def news_API_request(covid_terms=None, country: str = 'gb'):
+def news_api_request(covid_terms=None, country: str = 'gb'):
     newsapi = NewsApiClient(api_key=os.environ['KEY'])
     responses = []
 
