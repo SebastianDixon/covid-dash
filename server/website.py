@@ -34,7 +34,7 @@ def remove_notification(title: str = ""):
             break
 
 
-def get_notifications(refresh=True):
+def get_notifications(refresh: bool = True):
     if refresh:
         news_headlines = covid_news_handler.news_API_request()
 
