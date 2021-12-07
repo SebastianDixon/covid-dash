@@ -10,8 +10,8 @@ class TestData(unittest.TestCase):
         assert len(data) == 639
 
     def test_process_covid_csv_data(self):
-        last7days_cases, current_hospital_cases, total_deaths =
-        process_covid_csv_data(parse_csv_data(mock_api_result))
+        last7days_cases, current_hospital_cases, total_deaths = process_covid_csv_data(
+            parse_csv_data(mock_api_result))
         assert last7days_cases == 10661
         assert current_hospital_cases == 6027
         assert total_deaths is None
