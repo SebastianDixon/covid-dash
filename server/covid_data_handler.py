@@ -1,10 +1,22 @@
 import csv
-import json
 from uk_covid19 import Cov19API
-import sched, time
 import os
+import logging
+
+"""
+This module handles calling covid data for the front end
+"""
 
 csv_path = os.environ['CSV_PATH']
+
+cases_and_deaths = {
+    "areaCode": "areaCode",
+    "areaName": "areaName",
+    "areaType": "areaType",
+    "date": "date",
+    "cumDailyNsoDeathsByDeathDate": "cumDailyNsoDeathsByDeathDate",
+    "hospitalCases": "hospitalCases",
+    "newCasesBySpecimenDate": "newCasesBySpecimenDate"}
 
 
 def parse_csv_data(csv_path):
@@ -45,22 +57,16 @@ def process_covid_csv_data(covid_csv_data):
     return output
 
 
-
 def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ['LOCATION_TYPE']):
-    location_filter = [f'areaType={location_type}', f'areaName={location}']
+    try:
+        location_filter = [f'areaType={location_type}', f'areaName={location}']
 
-    cases_and_deaths = {
-        "areaCode": "areaCode",
-        "areaName": "areaName",
-        "areaType": "areaType",
-        "date": "date",
-        "cumDailyNsoDeathsByDeathDate": "cumDailyNsoDeathsByDeathDate",
-        "hospitalCases": "hospitalCases",
-        "newCasesBySpecimenDate": "newCasesBySpecimenDate"}
-
-    api = Cov19API(filters=location_filter, structure=cases_and_deaths)
-    api_data = api.get_json()
-    return api_data['data']
+        api = Cov19API(filters=location_filter, structure=cases_and_deaths)
+        api_data = api.get_json()
+        return api_data['data']
+    except:
+        logging.error("API request couldn't be made")
+        raise Exception
 
 
 def process_covid_data():
@@ -78,7 +84,7 @@ def process_covid_data():
 
     total_death = 0
     for i in national_data:
-        if i['cumDailyNsoDeathsByDeathDate'] == None:
+        if i['cumDailyNsoDeathsByDeathDate'] is None:
             pass
         else:
             if i['cumDailyNsoDeathsByDeathDate'] > total_death:
@@ -87,12 +93,5 @@ def process_covid_data():
     local_rate = local_cases / 7
     national_rate = national_cases / 7
     h_cases = national_data[1]['hospitalCases']
+    print("data called")
     return [local_rate, national_rate, total_death, h_cases]
-
-
-def schedule_covid_updates(update_interval, update_name):
-    s = sched.scheduler(time.time, time.sleep)
-    s.enter(update_interval, 1, process_covid_data())
-    s.run()
-
-

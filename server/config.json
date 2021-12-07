@@ -6,5 +6,6 @@
   "NATION_TYPE": "nation",
   "KEY": "88aa96ff69a44201be768c105e9b11a2",
   "CSV_PATH": "C:/Users/marke/Desktop/ECM1400/nation_2021-10-28.csv",
-  "TEMPLATES_PATH": "index.html"
+  "TEMPLATES_PATH": "index.html",
+  "server_log_path": "server.log"
 }

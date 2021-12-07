@@ -9,7 +9,12 @@ from flask import request
 
 import covid_data_handler
 import covid_news_handler
-from alarm_scheduler import cancel_alarm, schedule_alarm, get_alarms
+from update_scheduler import cancel_update, schedule_update, get_updates
+
+"""
+This module handles rendering the front end through django
+and sorting notifications
+"""
 
 app = Flask(__name__)
 
@@ -48,14 +53,10 @@ def get_notifications(refresh=True):
 @app.route("/")
 @app.route('/index')
 def render():
-    # the title of the alarm to be removed
     deleted_alarm_title = request.args.get("update_item", default="")
-    # the title of the notification to be removed
     notification_title = request.args.get("notif", default="")
-    # the time when an alarm will be scheduled
-    new_alarm_time = request.args.get("update", default="")
-    # the title of the alarm
-    new_alarm_title = request.args.get("two", default="")
+    new_update_time = request.args.get("update", default="")
+    new_update_title = request.args.get("two", default="")
 
     if notification_title:
         remove_notification(notification_title)
@@ -64,16 +65,15 @@ def render():
         notifications = get_notifications(refresh=not deleted_alarm_title)
 
     if deleted_alarm_title:
-        cancel_alarm(deleted_alarm_title)
+        cancel_update(deleted_alarm_title)
 
-    alarms = get_alarms()
+    alarms = get_updates()
 
-    if new_alarm_time and new_alarm_title:
-        # the user wants to schedule an alarm
+    if new_update_time and new_update_title:
         current_day = datetime.date.today()
-        day_time = str(current_day) + "T" + str(new_alarm_time)
-        schedule_alarm(
-            title=new_alarm_title,
+        day_time = str(current_day) + "T" + str(new_update_time)
+        schedule_update(
+            title=new_update_title,
             at_time=datetime.datetime.strptime(day_time, DATE_FORMAT)
         )
 
