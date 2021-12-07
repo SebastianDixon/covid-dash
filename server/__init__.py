@@ -9,13 +9,6 @@ This module initialises the environment variables and is run before any other mo
 CONFIG_PATH = "config.json"
 
 
-def setup_logging():
-    logging.basicConfig(
-        filename=os.environ["SERVER_LOG_PATH"],
-        level=logging.DEBUG,
-    )
-
-
 def load_env():
     with open(CONFIG_PATH, "r") as config_file:
         configs = json.load(config_file)
@@ -24,12 +17,20 @@ def load_env():
             os.environ[key.upper()] = val
 
 
+def setup_logging():
+    logging.basicConfig(
+        filename=os.environ["SERVER_LOG_PATH"],
+        level=logging.DEBUG,
+    )
+
+
 def setup_server():
     load_env()
     setup_logging()
 
 
 setup_server()
+
 
 import website
 

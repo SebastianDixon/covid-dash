@@ -7,7 +7,7 @@ import logging
 This module handles calling covid data for the front end
 """
 
-csv_path = os.environ['CSV_PATH']
+#csv_path = os.environ['CSV_PATH']
 
 cases_and_deaths = {
     "areaCode": "areaCode",
@@ -57,7 +57,7 @@ def process_covid_csv_data(covid_csv_data):
     return output
 
 
-def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ['LOCATION_TYPE']):
+def covid_api_request(location=os.environ['LOCATION'], location_type=os.environ['LOCATION_TYPE']):
     try:
         location_filter = [f'areaType={location_type}', f'areaName={location}']
 
@@ -70,9 +70,8 @@ def covid_API_request(location=os.environ['LOCATION'], location_type=os.environ[
 
 
 def process_covid_data():
-    local_data = covid_API_request()
-    national_data = covid_API_request(location=os.environ['NATION'],
-                                      location_type=os.environ['NATION_TYPE'])
+    local_data = covid_api_request()
+    national_data = covid_api_request(location=os.environ['NATION'], location_type=os.environ['NATION_TYPE'])
 
     count = 1
     local_cases = 0
@@ -93,5 +92,5 @@ def process_covid_data():
     local_rate = local_cases / 7
     national_rate = national_cases / 7
     h_cases = national_data[1]['hospitalCases']
-    print("data called")
+    print(national_data)
     return [local_rate, national_rate, total_death, h_cases]

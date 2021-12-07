@@ -1,57 +1,40 @@
-"""
-Test code for server.api.covid
-"""
 
 import datetime
-from pytest_mock import MockerFixture
+from server.covid_data_handler import parse_csv_data, process_covid_csv_data
+import unittest
 
-from server import covid_data_handler
 
-__mock_data_point = {
-    "date": "2020-07-28",
-    "areaName": "test-area-name",
-    "areaCode": "test-area-code",
-    # new cases on the given date
-    "newCasesByPublishDate": 1,
-    # cumulative cases up until the given date
-    "cumCasesByPublishDate": 2,
-    # number of new deaths on the given date
-    "newDeathsByDeathDate": 3,
-    # cumulative number of deaths up until the given date
-    "cumDeathsByDeathDate": 4,
-}
+class TestData(unittest.TestCase):
+    def test_parse_csv_data(self):
+        data = parse_csv_data("C:/Users/marke/Desktop/ECM1400/nation_2021-10-28.csv")
+        assert len(data) == 639
 
-__mock_api_result = {
+    def test_process_covid_csv_data(self):
+        last7days_cases, current_hospital_cases, total_deaths =
+        process_covid_csv_data(parse_csv_data(mock_api_result))
+        assert last7days_cases == 10661
+        assert current_hospital_cases == 6027
+        assert total_deaths is None
+
+
+mock_api_result = {
     "data": [
-        {
-            "date": "2020-07-28",
-            "areaName": "England",
-            "areaCode": "E92000001",
-            "newCasesByPublishDate": 547,
-            "cumCasesByPublishDate": 259022,
-            "newDeathsByDeathDate": None,
-            "cumDeathsByDeathDate": None,
-        },
-        {
-            "date": "2020-07-27",
-            "areaName": "England",
-            "areaCode": "E92000001",
-            "newCasesByPublishDate": 616,
-            "cumCasesByPublishDate": 258475,
-            "newDeathsByDeathDate": 20,
-            "cumDeathsByDeathDate": 41282,
-        },
+        {'areaCode': 'E92000001',
+         'areaName': 'England',
+         'areaType': 'nation',
+         'date': '2021-12-07',
+         'cumDailyNsoDeathsByDeathDate': None,
+         'hospitalCases': 6027,
+         'newCasesBySpecimenDate': None},
+
+        {'areaCode': 'E92000001',
+         'areaName': 'England',
+         'areaType': 'nation',
+         'date': '2021-12-06',
+         'cumDailyNsoDeathsByDeathDate': None,
+         'hospitalCases': 5992,
+         'newCasesBySpecimenDate': 10661}
     ]
 }
 
-__mock_today = datetime.datetime.strptime("2020-07-28", "%Y-%m-%d").date()
-
-
-def test_fetch_covid_data():
-    result = covid_data_handler.process_covid_data()
-    #    return [local_rate, national_rate, total_death, h_cases]
-
-    assert result[0]
-    assert result[1]
-    assert result[2] == 547
-    assert result[3] == 259022
+mock_today = datetime.datetime.strptime("2021-12-07", "%Y-%m-%d").date()
