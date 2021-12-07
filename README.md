@@ -1,6 +1,6 @@
-# Covid19 Dashboard
+# Covid-19 Dashboard
 
-Covid19 statistics for local and national locations built on a flask backend.
+Covid-19 statistics for local and national locations built on a flask backend.
 
 ## Repository
 

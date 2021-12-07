@@ -1,11 +1,10 @@
-import requests
 from newsapi import NewsApiClient
-from datetime import date
-import numpy as np
-import json
-import sched, time
 import random
 import os
+
+"""
+This module handles calling news articles for the front end
+"""
 
 
 def news_API_request(covid_terms=None, country='gb'):
@@ -33,14 +32,8 @@ def news_API_request(covid_terms=None, country='gb'):
             if t1 == interior['title']:
                 responses.remove(interior)
         count += 1
-
+    print("news called")
     return responses
-
-
-def update_news(update_interval):
-    s = sched.scheduler(time.time, time.sleep)
-    s.enter(update_interval, 1, news_API_request())
-    s.run()
 
 
 def calculate_news_id():
